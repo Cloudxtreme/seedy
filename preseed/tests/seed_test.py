@@ -76,7 +76,7 @@ class Test___init__(object):
         assert self.pfile.load.called == desired_called
     #---
 
-    def test_SaveFilePathIfProvidedAndAutoLoadDisabled(self):
+    def test_SavesFilePathIfProvidedAndAutoLoadDisabled(self):
         """
         Tests that the initializer will save a provided preseed file path but not load it if autoload is ``False``.
 
