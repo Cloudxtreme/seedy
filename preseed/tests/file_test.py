@@ -103,14 +103,33 @@ class Test_to_text(object):
         Test setup
 
         """
-        pfile = file.File()
+        self.preseed_data = {
+            'd-i': {
+                'pkgsel/include': ['string', 'vim openssh-server python-pip python-software-properties salt-minion rng-tools'],
+                'pkgsel/language-packs': ['multiselect', ''],
+                'pkgsel/update-policy': ['select', 'none'],
+                'pkgsel/updatedb': ['boolean', 'true'],
+                'pkgsel/upgrade': ['select', 'safe-upgrade'],
+            }
+        }
+        self.preseed_string = 'd-i pkgsel/include string vim openssh-server python-pip python-software-properties salt-minion rng-tools\n' \
+            'd-i pkgsel/language-packs multiselect \n' \
+            'd-i pkgsel/update-policy select none\n' \
+            'd-i pkgsel/updatedb boolean true\n' \
+            'd-i pkgsel/upgrade select safe-upgrade\n'
+
+
+        self.pfile = file.File()
+        self.pfile._data = self.preseed_data.copy()
     #---
 
-    def test_(self):
+    def test_ConvertsDataToString(self):
         """
-        Tests
+        Tests that the method properly converts the preseed data to a string
 
         """
+        preseed_text = self.pfile.to_text()
+        assert preseed_text == self.preseed_string
     #---
 
 #---
@@ -172,7 +191,7 @@ class Test_find_questions_by_owner(object):
         self.preseed_data = {
             'd-i': {
                 'pkgsel/include': ['string', 'vim openssh-server python-pip python-software-properties salt-minion rng-tools'],
-                'pkgsel/language-packs': ['multiselect', None],
+                'pkgsel/language-packs': ['multiselect', ''],
                 'pkgsel/update-policy': ['select', 'none'],
                 'pkgsel/updatedb': ['boolean', 'true'],
                 'pkgsel/upgrade': ['select', 'safe-upgrade'],
@@ -182,7 +201,7 @@ class Test_find_questions_by_owner(object):
         self.filtered_dict = {
             'd-i': {
                 'pkgsel/include': ['string', 'vim openssh-server python-pip python-software-properties salt-minion rng-tools'],
-                'pkgsel/language-packs': ['multiselect', None],
+                'pkgsel/language-packs': ['multiselect', ''],
                 'pkgsel/update-policy': ['select', 'none'],
                 'pkgsel/updatedb': ['boolean', 'true'],
                 'pkgsel/upgrade': ['select', 'safe-upgrade'],
