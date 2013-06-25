@@ -24,6 +24,8 @@
 #
 
 import os
+import datetime
+import getpass
 
 
 class FileError(Exception): pass
@@ -45,7 +47,7 @@ class File(object):
         Constructor
 
         """
-        if self._file_exists(preseed_file) and autoload:
+        if autoload:
             self._file_path = preseed_file
             self.load(preseed_file)
     #---
@@ -57,6 +59,7 @@ class File(object):
         :param item: Item to look up in _data
 
         :return: Python object
+
         """
         if item in self._data:
             return self._data[item]
@@ -79,6 +82,22 @@ class File(object):
             raise PreseedFileError('Invalid preseed file path: %s' % preseed_file)
     #---
 
+    def to_text(self):
+        """
+        Converts the preseed data into text, exactly as you would find in a preseed file.
+
+        :return: str containing the preseed data converted to text format
+
+        """
+        preseed_txt = ''
+
+        for owner,question_data in self._data.iteritems():
+            for question_name,(question_type,question_value) in sorted(question_data.iteritems()):
+                preseed_txt += '%s %s %s %s\n' % (owner, question_name, question_type, question_value)
+
+        return preseed_txt
+    #---
+
     def load(self, preseed_file=None):
         """
         Loads a preseed file into the object
@@ -90,24 +109,88 @@ class File(object):
 
         with open(preseed_file) as preseed_txt:
             for line in preseed_txt:
-                owner, question_name, question_type, question_value = line.split(' ', 3)
+                if line.startswith('#') or line.startswith('\n'):   # Skip comments and blank lines
+                    continue
 
-                self._data[owner][question_name] = [question_type, question_value]
+                question_data = line.strip().split(None, 3)
 
+                try:
+                    owner, question_name, question_type, question_value = question_data
+                except ValueError:
+                    # Leaving the value blank is perfectly valid for some questions
+                    owner, question_name, question_type = question_data
+                    question_value = ''
+
+                if owner in self._data:
+                    self._data[owner].update({question_name: [question_type, question_value]})
+                else:
+                    self._data[owner] = {question_name: [question_type, question_value]}
     #---
 
     def save(self, preseed_file=None):
         """
         Saves the preseed data out to an actual file.
 
-        """
+        :param preseed_file: The path to the preseed file to write
+        :type preseed_file: str
 
-        for owner,question_data in self._data.items():
-            for question_name,(question_type,question_value) in question_data.items():
-                line = '%s %s %s %s' % (owner, question_name, question_type, question_value)
+        """
+        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 
         with open(preseed_file, 'w') as preseed_txt:
-            preseed_txt.write('%s %s %(question_type)s %(question_value)s\n' % (owner, question_data))
+            preseed_txt.write('# Automatically generated with seedy.preseed on %s by %s\n#\n\n\n' %
+                              (now, getpass.getuser()))
+            preseed_txt.write(self.to_text())
     #---
 
+    def find_questions_by_owner(self, owner, search, include_data = True):
+        """
+        Allows finding of questions in the preseed data.  This is VERY simple search, no wildcards just 'is search in
+         key'.
+
+        :param owner: The owner of the question
+        :type owner: str
+        :param search: String to match question keys on
+        :type search: str
+        :param include_data: Will return the full data of each matched question if ``True``
+        :type include_data: bool
+
+        :returns: If include_data is ``True``, a dict of the keys and their associated data
+                    else
+                    a list of keys which have the search string in them
+
+        """
+        if include_data:
+            return {question: data for question, data in self._data[owner].iteritems() if search in question}
+
+        return [question for question in self._data[owner] if search in question]
+    #---
+
+    def find_questions(self, search, owner = None, include_data = True):
+        """
+        Searches for questions within the entire preseed file.  This method will search for matches in all owners'
+        questions by default.
+
+        :param owner: The owner of the question, defaults to all owners (``None``)
+        :type owner: str
+        :param search: String to match question keys on
+        :type search: str
+        :param include_data: Will return the full data of each matched question if ``True``
+        :type include_data: bool
+
+        :returns: dict containing matching questions and data, or if include_data is ``False`` only the questions.
+
+        """
+        return_values = {}
+
+        if owner:
+            return self.find_questions_by_owner(owner, search, include_data)
+
+        for owner in self._data.iterkeys():
+            questions = self.find_questions_by_owner(owner, search, include_data)
+            if questions:
+                return_values[owner] = questions
+
+        return return_values
+    #---
 #---
