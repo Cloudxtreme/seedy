@@ -2,7 +2,7 @@
 #
 # $Id: $
 #
-# NAME:         file.py
+# NAME:         seedfile.py
 #
 # AUTHOR:       Nick Whalen <nickw@mindstorm-networks.net>
 # COPYRIGHT:    2013 by Nick Whalen
@@ -33,7 +33,7 @@ class PreseedFileError(FileError): pass
 class OwnerError(FileError): pass
 
 
-class File(object):
+class SeedFile(object):
     """
     Encapsulates a preseed file.
 
