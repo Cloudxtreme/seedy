@@ -144,7 +144,7 @@ class File(object):
             preseed_txt.write(self.to_text())
     #---
 
-    def find_questions_by_owner(self, owner, search, include_data = True):
+    def find_questions_by_owner(self, owner, search, with_data = True):
         """
         Allows finding of questions in the preseed data.  This is VERY simple search, no wildcards just 'is search in
          key'.
@@ -153,10 +153,10 @@ class File(object):
         :type owner: str
         :param search: String to match question keys on
         :type search: str
-        :param include_data: Will return the full data of each matched question if ``True``
-        :type include_data: bool
+        :param with_data: Will return the full data of each matched question if ``True``
+        :type with_data: bool
 
-        :returns: If include_data is ``True``, a dict of the keys and their associated data
+        :returns: If with_data is ``True``, a dict of the keys and their associated data
                     else
                     a list of keys which have the search string in them
         :raises: OwnerError
@@ -165,7 +165,7 @@ class File(object):
         if owner not in self._data.keys():
             raise OwnerError("Owner '%s' not found" % owner)
 
-        if include_data:
+        if with_data:
             return {question: data for question, data in self._data[owner].iteritems() if search in question}
 
         return [question for question in self._data[owner] if search in question]
