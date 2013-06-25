@@ -171,7 +171,7 @@ class File(object):
         return [question for question in self._data[owner] if search in question]
     #---
 
-    def find_questions(self, search, owner = None, include_data = True):
+    def find_questions(self, search, owner = None, with_data = True):
         """
         Searches for questions within the entire preseed file.  This method will search for matches in all owners'
         questions by default.
@@ -180,19 +180,19 @@ class File(object):
         :type owner: str
         :param search: String to match question keys on
         :type search: str
-        :param include_data: Will return the full data of each matched question if ``True``
-        :type include_data: bool
+        :param with_data: Will return the full data of each matched question if ``True``
+        :type with_data: bool
 
-        :returns: dict containing matching questions and data, or if include_data is ``False`` only the questions.
+        :returns: dict containing matching questions and data, or if with_data is ``False`` only the questions.
 
         """
         return_values = {}
 
         if owner:
-            return self.find_questions_by_owner(owner, search, include_data)
+            return self.find_questions_by_owner(owner, search, with_data)
 
         for owner in self._data.iterkeys():
-            questions = self.find_questions_by_owner(owner, search, include_data)
+            questions = self.find_questions_by_owner(owner, search, with_data)
             if questions:
                 return_values[owner] = questions
 
