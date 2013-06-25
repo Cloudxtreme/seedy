@@ -30,6 +30,7 @@ import getpass
 
 class FileError(Exception): pass
 class PreseedFileError(FileError): pass
+class OwnerError(FileError): pass
 
 
 class File(object):
@@ -47,7 +48,7 @@ class File(object):
         Constructor
 
         """
-        if autoload:
+        if preseed_file and autoload:
             self._file_path = preseed_file
             self.load(preseed_file)
     #---
@@ -158,8 +159,12 @@ class File(object):
         :returns: If include_data is ``True``, a dict of the keys and their associated data
                     else
                     a list of keys which have the search string in them
+        :raises: OwnerError
 
         """
+        if owner not in self._data.keys():
+            raise OwnerError("Owner '%s' not found" % owner)
+
         if include_data:
             return {question: data for question, data in self._data[owner].iteritems() if search in question}
 
