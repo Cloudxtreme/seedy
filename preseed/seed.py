@@ -48,8 +48,10 @@ class Seed(object):
         Constructor
 
         """
-        if preseed_file and autoload:
+        if preseed_file:
             self._file_path = preseed_file
+
+        if autoload and preseed_file:
             self.load(preseed_file)
     #---
 
