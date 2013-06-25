@@ -2,7 +2,7 @@
 #
 # $Id: $
 #
-# NAME:         seedfile.py
+# NAME:         seed.py
 #
 # AUTHOR:       Nick Whalen <nickw@mindstorm-networks.net>
 # COPYRIGHT:    2013 by Nick Whalen
@@ -28,12 +28,12 @@ import datetime
 import getpass
 
 
-class FileError(Exception): pass
-class PreseedFileError(FileError): pass
-class OwnerError(FileError): pass
+class SeedError(Exception): pass
+class PreseedFileError(SeedError): pass
+class OwnerError(SeedError): pass
 
 
-class SeedFile(object):
+class Seed(object):
     """
     Encapsulates a preseed file.
 
