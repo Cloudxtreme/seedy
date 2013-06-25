@@ -2,7 +2,7 @@
 #
 # $Id: $
 #
-# NAME:         file_test.py
+# NAME:         seed_test.py
 #
 # AUTHOR:       Nick Whalen <nickw@mindstorm-networks.net>
 # COPYRIGHT:    2013 by Nick Whalen
@@ -20,11 +20,13 @@
 #   limitations under the License.
 #
 # DESCRIPTION:
-#   Tests the preseed's File class
+#   Tests the preseed package's Seed class
 #
 
 import pytest
-from preseed import file
+import mock
+
+from preseed import seed
 
 
 class Test___init__(object):
@@ -37,16 +39,55 @@ class Test___init__(object):
         Test setup
 
         """
-        pfile = file.File()
+        self.local_preseed_file = reload(seed)
+        self.local_preseed_file.Seed.load = mock.MagicMock()
+
+        self.file_path = '/tmp/some/preseed.file'
     #---
 
-    def test_(self):
+    def test_LoadsFileIfProvidedAndAutoLoadEnabled(self):
         """
-        Tests
+        Tests that the initializer will load a provided preseed file if autoload is ``True``.
 
         """
+        self.pfile = seed.Seed(self.file_path)
+        self.pfile.load.assert_called_once_with(self.file_path)
     #---
 
+    def test_DoesNotAttemptToLoadFileIfNotProvidedAndAutoLoadEnabled(self):
+        """
+        Tests that the initializer will not attempt to load a preseed file if none is provided, and if autoload is ``True``.
+
+        """
+        self.pfile = seed.Seed()
+
+        desired_called = False
+        assert self.pfile.load.called == desired_called
+    #---
+
+    def test_DoesNotAttemptToLoadFileIfProvidedAndAutoLoadDisabled(self):
+        """
+        Tests that the initializer will not attempt to load a preseed file if provided, and if autoload is ``False``.
+
+        """
+        self.pfile = seed.Seed(self.file_path, autoload=False)
+
+        desired_called = False
+        assert self.pfile.load.called == desired_called
+    #---
+
+    def test_SaveFilePathIfProvidedAndAutoLoadDisabled(self):
+        """
+        Tests that the initializer will save a provided preseed file path but not load it if autoload is ``False``.
+
+        """
+        self.pfile = seed.Seed(self.file_path, autoload=False)
+
+        desired_called = False
+        assert self.pfile.load.called == desired_called
+
+        assert self.pfile._file_path == self.file_path
+    #---
 #---
 
 class Test___getitem__(object):
@@ -59,7 +100,7 @@ class Test___getitem__(object):
         Test setup
 
         """
-        pfile = file.File()
+        pfile = seed.Seed()
     #---
 
     def test_(self):
@@ -81,7 +122,7 @@ class Test__file_exists(object):
         Test setup
 
         """
-        pfile = file.File()
+        pfile = seed.Seed()
     #---
 
     def test_(self):
@@ -119,7 +160,7 @@ class Test_to_text(object):
             'd-i pkgsel/upgrade select safe-upgrade\n'
 
 
-        self.pfile = file.File()
+        self.pfile = seed.Seed()
         self.pfile._data = self.preseed_data.copy()
     #---
 
@@ -144,7 +185,7 @@ class Test_load(object):
         Test setup
 
         """
-        pfile = file.File()
+        pfile = seed.Seed()
     #---
 
     def test_(self):
@@ -166,7 +207,7 @@ class Test_save(object):
         Test setup
 
         """
-        pfile = file.File()
+        pfile = seed.Seed()
     #---
 
     def test_(self):
@@ -209,7 +250,7 @@ class Test_find_questions_by_owner(object):
         }
         self.filtered_list = ['pkgsel/include', 'pkgsel/language-packs', 'pkgsel/update-policy', 'pkgsel/updatedb', 'pkgsel/upgrade',]
 
-        self.pfile = file.File()
+        self.pfile = seed.Seed()
         self.pfile._data = self.preseed_data.copy()
     #---
 
@@ -260,7 +301,7 @@ class Test_find_questions_by_owner(object):
         Tests that the method will raise an error for owners that do not exist.
 
         """
-        with pytest.raises(file.OwnerError):
+        with pytest.raises(seed.OwnerError):
             self.pfile.find_questions_by_owner('bob', '')
     #---
 #---
@@ -275,7 +316,7 @@ class Test_find_questions(object):
         Test setup
 
         """
-        pfile = file.File()
+        pfile = seed.Seed()
     #---
 
     def test_(self):
