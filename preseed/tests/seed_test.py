@@ -372,7 +372,7 @@ class Test_save(object):
 
     def test_WritesCorrectText(self):
         """
-        Tests
+        Tests that the method writes the correct text to the file (excluding the auto-generated header).
 
         """
         self.pfile.save(self.test_file)
@@ -384,7 +384,39 @@ class Test_save(object):
 
         os.remove(self.test_file)
     #---
+#---
 
+
+class Test_owners(object):
+    """
+    Tests the owners method
+
+    """
+    def setup_method(self, method):
+        """
+        Test setup
+
+        """
+        self.preseed_data = {
+            'd-i': {
+            },
+            'bob-barker': {
+            }
+        }
+
+        self.pfile = seed.Seed()
+        self.pfile._data = self.preseed_data
+    #---
+
+    def test_ReturnsCorrectOwners(self):
+        """
+        Tests that the method returns the correct owners.
+
+        """
+        owners = self.pfile.owners()
+
+        assert owners == self.preseed_data.keys()
+    #---
 #---
 
 class Test_find_questions_by_owner(object):

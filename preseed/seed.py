@@ -153,6 +153,16 @@ class Seed(object):
             preseed_txt.write(self.to_text())
     #---
 
+    def owners(self):
+        """
+        Returns a list of the question owners
+
+        :returns: list of owners
+
+        """
+        return self._data.keys()
+    #---
+
     def find_questions_by_owner(self, owner, search, with_data = True):
         """
         Allows finding of questions in the preseed data.  This is VERY simple search, no wildcards just 'is search in
