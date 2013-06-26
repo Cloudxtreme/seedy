@@ -484,14 +484,81 @@ class Test_find_questions(object):
         Test setup
 
         """
-        pfile = seed.Seed()
+        self.preseed_data = {
+            'd-i': {
+                'pkgsel/include': ['string', 'vim openssh-server python-pip python-software-properties salt-minion rng-tools'],
+                'pkgsel/language-packs': ['multiselect', ''],
+                'pkgsel/update-policy': ['select', 'none'],
+                'pkgsel/updatedb': ['boolean', 'true'],
+                'pkgsel/upgrade': ['select', 'safe-upgrade'],
+                'partman-lvm/confirm': ['boolean', 'true'],
+            },
+            'bob-barker': {
+                'aquestion/yep': ['string', 'no'],
+                'pkgsel/upgrade': ['select', 'wat'],
+            }
+        }
+        self.owner_filtered_dict = {
+            'pkgsel/include': ['string', 'vim openssh-server python-pip python-software-properties salt-minion rng-tools'],
+            'pkgsel/language-packs': ['multiselect', ''],
+            'pkgsel/update-policy': ['select', 'none'],
+            'pkgsel/updatedb': ['boolean', 'true'],
+            'pkgsel/upgrade': ['select', 'safe-upgrade'],
+        }
+        self.filtered_dict = {
+            'd-i': {
+                'pkgsel/include': ['string', 'vim openssh-server python-pip python-software-properties salt-minion rng-tools'],
+                'pkgsel/language-packs': ['multiselect', ''],
+                'pkgsel/update-policy': ['select', 'none'],
+                'pkgsel/updatedb': ['boolean', 'true'],
+                'pkgsel/upgrade': ['select', 'safe-upgrade'],
+            },
+            'bob-barker': {
+                'pkgsel/upgrade': ['select', 'wat'],
+            }
+        }
+        self.filtered_list = ['pkgsel/include', 'pkgsel/language-packs', 'pkgsel/update-policy', 'pkgsel/updatedb', 'pkgsel/upgrade',]
+
+        self.pfile = seed.Seed()
+        self.pfile._data = self.preseed_data
     #---
 
-    def test_(self):
+    def test_ReturnsSingleOwnerDataWhenOwnerIsSpecified(self):
         """
-        Tests
+        Tests that the method
 
         """
+        filtered_questions = self.pfile.find_questions('pkgsel', 'd-i')
+
+        assert filtered_questions == self.owner_filtered_dict
     #---
 
+    def test_RaisesOwnerErrorForInvalidOwner(self):
+        """
+        Tests that the method raises OwnerError for an invalid owner
+
+        """
+        with pytest.raises(seed.OwnerError):
+            self.pfile.find_questions('', 'pants')
+    #---
+
+    def test_ReturnsAllMatchingQuestionsForAllOwnersIfOwnerNotSet(self):
+        """
+        Tests that the method returns all questions that match for all owners, provided owner is not set.
+
+        """
+        filtered_questions = self.pfile.find_questions('pkgsel')
+
+        assert filtered_questions == self.filtered_dict
+    #---
+
+    def test_ReturnsAnEmptyDictIfNoMatches(self):
+        """
+        Tests that the method returns an empty dict if there are no matches
+
+        """
+        filtered_questions = self.pfile.find_questions('asdfg24')
+
+        assert filtered_questions == {}
+    #---
 #---
