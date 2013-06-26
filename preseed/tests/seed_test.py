@@ -100,14 +100,49 @@ class Test___getitem__(object):
         Test setup
 
         """
-        pfile = seed.Seed()
+        self.owner = 'd-i'
+        self.test_key = 'pkgsel/include'
+        self.preseed_data = {
+            'd-i': {
+                'pkgsel/include': ['string', 'vim openssh-server python-pip python-software-properties salt-minion rng-tools'],
+                'pkgsel/language-packs': ['multiselect', ''],
+                'pkgsel/update-policy': ['select', 'none'],
+                'pkgsel/updatedb': ['boolean', 'true'],
+                'pkgsel/upgrade': ['select', 'safe-upgrade'],
+            },
+
+            'bob': {
+                'barker': ['string', 'woof']
+            }
+        }
+
+        self.pfile = seed.Seed()
+        self.pfile._data = self.preseed_data.copy()
     #---
 
-    def test_(self):
+    def test_FetchesProperItemFromDict(self):
         """
-        Tests
+        Tests that the method fetches the proper dictionary key + data from the _data dict.
 
         """
+        assert self.pfile[self.owner] == self.preseed_data[self.owner]
+    #---
+
+    def test_ItemDataIsCorrect(self):
+        """
+        Tests that the data in the item that was fetched is as expected.
+
+        """
+        assert self.pfile[self.owner][self.test_key] == self.preseed_data[self.owner][self.test_key]
+    #---
+
+    def test_RaisesKeyErrorOnDNE(self):
+        """
+        Tests that if the key is does not exist in the dictionary, the method will raise KeyError
+
+        """
+        with pytest.raises(KeyError):
+            no = self.pfile['pants']
     #---
 
 #---
