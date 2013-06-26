@@ -70,7 +70,7 @@ class Seed(object):
             raise KeyError(item)
     #---
 
-    def _file_exists(self, preseed_file):
+    def _file_exists(self, preseed_file=None):
         """
         Validate that the file path stored in the class or passed as an arg is valid
 

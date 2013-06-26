@@ -144,7 +144,6 @@ class Test___getitem__(object):
         with pytest.raises(KeyError):
             no = self.pfile['pants']
     #---
-
 #---
 
 class Test__file_exists(object):
@@ -157,14 +156,43 @@ class Test__file_exists(object):
         Test setup
 
         """
-        pfile = seed.Seed()
+        self.pfile = seed.Seed()
     #---
 
-    def test_(self):
+    def test_RaisesPreseedFileErrorIfFileDNE_Parameter(self):
         """
-        Tests
+        Tests that the method raises PreseedFileError if the file does not exist.  This tests the method parameter.
 
         """
+        with pytest.raises(seed.PreseedFileError):
+            self.pfile._file_exists('/tmp/bob132413gb')
+    #---
+
+    def test_RaisesPreseedFileErrorIfFileDNE_Instance(self):
+        """
+        Tests that the method raises PreseedFileError if the file does not exist.  This tests the instance variable.
+
+        """
+        self.pfile._file_path = '/tmp/bob132413gb'
+        with pytest.raises(seed.PreseedFileError):
+            self.pfile._file_exists()
+    #---
+
+    def test_DoesNotRaiseErrorIfFileExists_Parameter(self):
+        """
+        Tests that the method does not raise an error if the file exists.  This tests the method parameter.
+
+        """
+        self.pfile._file_exists('/bin/sh')
+    #---
+
+    def test_DoesNotRaiseErrorIfFileExists_Instance(self):
+        """
+        Tests that the method does not raise an error if the file exists.  This tests the instance variable.
+
+        """
+        self.pfile._file_path = '/bin/sh'
+        self.pfile._file_exists()
     #---
 
 #---
