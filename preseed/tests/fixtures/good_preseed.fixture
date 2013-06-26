@@ -1,0 +1,5 @@
+# Example comment
+d-i base-installer/kernel/image string andromeda node
+d-i console-setup/variantcode	string
+d-i debian-installer/exit/poweroff	boolean false
+bob-barker some-damn-question/goaway boolean true

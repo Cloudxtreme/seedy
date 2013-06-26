@@ -108,7 +108,11 @@ class Seed(object):
         :param preseed_file: Path to the preseed file to parse
 
         """
-        self._file_exists(preseed_file)
+        if preseed_file:
+            self._file_path = preseed_file
+
+        self._file_exists(self._file_path)
+
 
         with open(preseed_file) as preseed_txt:
             for line in preseed_txt:

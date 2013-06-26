@@ -1,0 +1,5 @@
+# Example comment
+d-i base-installer/kernel/image string andromeda-node
+F-8
+
+d-i debian-installer/exit/poweroff	boolean false

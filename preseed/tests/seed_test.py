@@ -25,6 +25,7 @@
 
 import pytest
 import mock
+import os
 
 from preseed import seed
 
@@ -39,8 +40,8 @@ class Test___init__(object):
         Test setup
 
         """
-        self.local_preseed_file = reload(seed)
-        self.local_preseed_file.Seed.load = mock.MagicMock()
+        reload(seed)
+        seed.Seed.load = mock.MagicMock()
 
         self.file_path = '/tmp/some/preseed.file'
     #---
@@ -248,16 +249,89 @@ class Test_load(object):
         Test setup
 
         """
-        pfile = seed.Seed()
+        reload(seed)    # Clears mocks that may exist from the last test
+
+        self.preseed_fixture = '%s/fixtures/good_preseed.fixture' % os.path.dirname(__file__)
+        self.bad_preseed_fixture = '%s/fixtures/bad_preseed.fixture' % os.path.dirname(__file__)
+
+        self.pfile = seed.Seed()
     #---
 
-    def test_(self):
+    def test_ChecksForFileExistence(self):
         """
-        Tests
+        Tests that the method checks to make sure the file exists
 
         """
+        # seed = reload(seed)
+        seed.Seed._file_exists = mock.MagicMock()
+
+        self.pfile = seed.Seed()
+
+        self.pfile.load(self.preseed_fixture)
+        self.pfile._file_exists.assert_called_once_with(self.preseed_fixture)
     #---
 
+    def test_RaisesValueErrorOnInvalidFormat(self):
+        """
+        Tests that the method will raise a ValueError when the preseed format is invalid
+
+        """
+        with pytest.raises(ValueError):
+            self.pfile.load(self.bad_preseed_fixture)
+    #---
+
+    def test_IgnoresComments(self):
+        """
+        Tests that the method ignores lines prefixed with #
+
+        """
+        self.pfile.load(self.preseed_fixture)
+
+        assert '#' not in self.pfile._data.keys()
+    #---
+
+    def test_IgnoresBlankLines(self):
+        """
+        Tests that the method ignores blank lines
+
+        """
+        self.pfile.load(self.preseed_fixture)
+
+        assert '\n' not in self.pfile._data.keys()
+    #---
+
+    def test_LoadsOwners(self):
+        """
+        Tests that the method properly loads the question owners
+
+        """
+        owners = ['d-i', 'bob-barker']
+        self.pfile.load(self.preseed_fixture)
+
+        assert self.pfile._data.keys() == owners
+    #---
+
+    def test_LoadsQuestionNames(self):
+        """
+        Tests that the method properly loads the question names
+
+        """
+        questions = ['base-installer/kernel/image', 'debian-installer/exit/poweroff', 'console-setup/variantcode',]
+        self.pfile.load(self.preseed_fixture)
+
+        assert self.pfile._data['d-i'].keys() == questions
+    #---
+
+    def test_LoadsQuestionDataTypesAndData(self):
+        """
+        Tests that the method properly loads the question data types and data
+
+        """
+        question_data = [['string', 'andromeda node'], ['boolean', 'false'],  ['string', '']]
+        self.pfile.load(self.preseed_fixture)
+
+        assert self.pfile._data['d-i'].values() == question_data
+    #---
 #---
 
 class Test_save(object):
