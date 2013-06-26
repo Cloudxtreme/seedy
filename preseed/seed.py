@@ -142,6 +142,9 @@ class Seed(object):
         :type preseed_file: str
 
         """
+        if not preseed_file:
+            preseed_file = self._file_path
+
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 
         with open(preseed_file, 'w') as preseed_txt:

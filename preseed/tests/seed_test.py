@@ -26,6 +26,7 @@
 import pytest
 import mock
 import os
+import getpass
 
 from preseed import seed
 
@@ -344,14 +345,44 @@ class Test_save(object):
         Test setup
 
         """
-        pfile = seed.Seed()
+        self.test_file = '/tmp/preseed.test'
+        self.preseed_data = {
+            'd-i': {
+                'pkgsel/include': ['string', 'vim openssh-server python-pip python-software-properties salt-minion rng-tools'],
+                'pkgsel/language-packs': ['multiselect', ''],
+                'pkgsel/update-policy': ['select', 'none'],
+                'pkgsel/updatedb': ['boolean', 'true'],
+                'pkgsel/upgrade': ['select', 'safe-upgrade'],
+            },
+            'bob-barker': {
+                'aquestion/yep': ['string', 'no']
+            }
+        }
+        self.preseed_string = '#\n\n\n' \
+            'd-i pkgsel/include string vim openssh-server python-pip python-software-properties salt-minion rng-tools\n' \
+            'd-i pkgsel/language-packs multiselect \n' \
+            'd-i pkgsel/update-policy select none\n' \
+            'd-i pkgsel/updatedb boolean true\n' \
+            'd-i pkgsel/upgrade select safe-upgrade\n' \
+            'bob-barker aquestion/yep string no\n'
+
+        self.pfile = seed.Seed()
+        self.pfile._data = self.preseed_data
     #---
 
-    def test_(self):
+    def test_WritesCorrectText(self):
         """
         Tests
 
         """
+        self.pfile.save(self.test_file)
+
+        with open(self.test_file) as preseed_text:
+            file_text = preseed_text.read()
+
+        assert file_text.split('\n')[1:] == self.preseed_string.split('\n')
+
+        os.remove(self.test_file)
     #---
 
 #---
