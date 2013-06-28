@@ -2,7 +2,7 @@
 #
 # $Id: $
 #
-# NAME:         __init__.py
+# NAME:         seedy.wsgi
 #
 # AUTHOR:       Nick Whalen <nickw@mindstorm-networks.net>
 # COPYRIGHT:    2013 by Nick Whalen
@@ -20,13 +20,15 @@
 #   limitations under the License.
 #
 # DESCRIPTION:
+#   WSGI entry point for webapp
 #
-#
 
-__all__ = ['seedy_web_service']
 
-import flask
+from seedyweb import seedy_web_service as application
 
-seedy_web_service = flask.Flask('seedyweb')
-
-from seedyweb import routes
+if __name__ == '__main__':
+    # Runs a basic web server
+    application.debug = True
+    application.run(host='0.0.0.0', port=8080)
+else:
+    application.run()

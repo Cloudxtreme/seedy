@@ -2,7 +2,7 @@
 #
 # $Id: $
 #
-# NAME:         __init__.py
+# NAME:         seedyweb.py
 #
 # AUTHOR:       Nick Whalen <nickw@mindstorm-networks.net>
 # COPYRIGHT:    2013 by Nick Whalen
@@ -20,13 +20,15 @@
 #   limitations under the License.
 #
 # DESCRIPTION:
+#   The main webapp for seedy
 #
-#
 
-__all__ = ['seedy_web_service']
+from flask import render_template
 
-import flask
+from seedyweb import seedy_web_service
 
-seedy_web_service = flask.Flask('seedyweb')
 
-from seedyweb import routes
+
+@seedy_web_service.route('/')
+def hello_world():
+    return render_template('home.html')
