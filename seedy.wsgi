@@ -27,6 +27,7 @@
 from seedyweb import seedy_web_service as application
 from seedydb.seedydb import db_session
 
+
 @application.teardown_appcontext
 def shutdown_db_session(exception=None):
     """

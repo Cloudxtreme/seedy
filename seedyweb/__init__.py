@@ -30,3 +30,6 @@ import flask
 seedy_web_service = flask.Flask('seedyweb')
 
 from seedyweb import routes
+
+from seedydb import seedydb
+seedydb.init_db()
