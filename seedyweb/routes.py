@@ -2,7 +2,7 @@
 #
 # $Id: $
 #
-# NAME:         seedyweb.py
+# NAME:         routes.py
 #
 # AUTHOR:       Nick Whalen <nickw@mindstorm-networks.net>
 # COPYRIGHT:    2013 by Nick Whalen
@@ -20,15 +20,16 @@
 #   limitations under the License.
 #
 # DESCRIPTION:
-#   The main webapp for seedy
+#   The Seedy Flask routes
 #
 
 from flask import render_template
-
 from seedyweb import seedy_web_service
 
 
-
 @seedy_web_service.route('/')
-def hello_world():
+def web_root():
     return render_template('home.html')
+
+
+# Preseed REST interface
