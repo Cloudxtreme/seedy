@@ -1,6 +1,7 @@
 *.py[co]
 *idea
 *scratch*
+settings.py
 
 # Packages
 *.egg
