@@ -2,7 +2,7 @@
 #
 # $Id: $
 #
-# NAME:         seedy.wsgi
+# NAME:         seedydb.py
 #
 # AUTHOR:       Nick Whalen <nickw@mindstorm-networks.net>
 # COPYRIGHT:    2013 by Nick Whalen
@@ -20,28 +20,24 @@
 #   limitations under the License.
 #
 # DESCRIPTION:
-#   WSGI entry point for webapp
+#   Database system for Seedy, based on SQLAlchemy
 #
 
+import sqlalchemy
+from sqlalchemy import orm
+from sqlalchemy.ext import declarative
 
-from seedyweb import seedy_web_service as application
-from seedydb.seedydb import db_session
 
-@application.teardown_appcontext
-def shutdown_db_session(exception=None):
-    """
-    Cleanly shuts the database down at the end of the Flask session
+# TODO: Make this configurable
+engine = sqlalchemy.create_engine('sqlite:////tmp/seedy.db', convert_unicode=True)
+db_session = orm.scoped_session(orm.sessionmaker(autoflush=False, bind=engine))
 
-    :param exception:
 
-    """
-    db_session.remove()
+SeedyDB = declarative.declarative_base()
+SeedyDB.query = db_session.query_property()
+
+
+def init_db():
+    from . import models
+    SeedyDB.metadata.create_all(bind=engine)
 #---
-
-
-if __name__ == '__main__':
-    # Runs a basic web server
-    application.debug = True
-    application.run(host='0.0.0.0', port=8080)
-else:
-    application.run()
