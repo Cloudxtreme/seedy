@@ -1,7 +1,7 @@
-Flask
-Jinja2
-MarkupSafe
-Werkzeug
+Django
 argparse
-itsdangerous
+docutils
+mock
+py
+pytest
 wsgiref
