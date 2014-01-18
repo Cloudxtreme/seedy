@@ -1,7 +1,6 @@
-Django
+flask
 argparse
 docutils
 mock
-py
 pytest
-wsgiref
+wtforms
