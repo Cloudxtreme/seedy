@@ -240,6 +240,25 @@ class Test_to_text(object):
 
 #---
 
+class Test_to_dict(object):
+    """
+    Tests the to_dict method.
+
+    """
+    def setup_method(self, method):
+        """
+        Test setup
+
+        :param method:
+        """
+        self.pfile = seed.Seed()
+
+    def test_ReturnsInternalDict(self):
+        self.pfile._data = {'some': 'test data'}
+        the_dict = self.pfile.to_dict()
+
+        assert the_dict == self.pfile._data
+
 class Test_load(object):
     """
     Tests the load method

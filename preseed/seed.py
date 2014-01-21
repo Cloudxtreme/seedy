@@ -101,6 +101,13 @@ class Seed(object):
         return preseed_txt
     #---
 
+    def to_dict(self):
+        """
+        Returns the preseed data as a dictionary
+
+        """
+        return self._data
+
     def load(self, preseed_file=None):
         """
         Loads a preseed file into the object
